@@ -27,6 +27,10 @@
 				$('#lastUpdate').text(new Date().toString('dd.MM.yyyy HH:mm:ss'));
 			});
 			
+			socket.on('setSiteInProcess', function(id) {
+				$('#siteTable .site-' + id + ' td.id').html('<i class="glyphicon glyphicon-forward"></i>');
+			});
+			
 			socket.on('error', function(data) {
 				$('#siteTable tr.siteInfo').remove();
 				dangerAlert.show();
@@ -43,11 +47,12 @@
 			var id = item.Id;
 			var name = item.Name;
 			var uri = '<a href="' + item.Uri + '">' + item.Uri + '</a>';
-			var status = (typeof(data.lastStatus) !== 'undefined') ? (data.lastStatus ? '<span class="label label-success">' + data.lastStatusText + '</span>' : '<span class="label label-danger">' + data.lastStatusText + '</span>') : '<span class="label label-default">No data</span>';
+			var statusText = (typeof(data.lastStatusText) !== 'undefined') ? data.lastStatusText : 'No data';
 			var date = (typeof(data.lastStatusDate) !== 'undefined') ? new Date(data.lastStatusDate).toString('dd.MM.yyyy HH:mm:ss') : '-';
 			var additionalTrStyle = (data.lastStatus === false) ? ' danger' : '';
+			var statusStyle = (typeof(data.lastStatus) !== 'undefined') ? (data.lastStatus ? 'label-success' : 'label-danger') : 'label-default';
 			
-			return '<tr class="siteInfo site-' + id + additionalTrStyle + '"><td>' + id + '</td><td>' + name + '</td><td>' + uri + '</td><td>' + status + '</td><td>' + date + '</td></tr>';
+			return '<tr class="siteInfo site-' + id + additionalTrStyle + '"><td class="id">' + id + '</td><td>' + name + '</td><td>' + uri + '</td><td><span class="label ' + statusStyle + '">' + statusText + '</span></td><td>' + date + '</td></tr>';
 		};
 	</script>
 </head>

@@ -1,7 +1,9 @@
 var fs = require("fs");
 var url = require("url");
 var path = require("path");
-var nodeStatic = require('node-static');
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var request = require('request');
 
 var config = require('./config.json');
@@ -21,6 +23,8 @@ Main = function () {
 };
 
 CheckSite = function (item) {
+	io.emit('setSiteInProcess', item.Id);
+	
 	request(item.Uri, function (error, response, body) {
 		if (!error) {
 			sitesData[item.Id].lastStatus = response.statusCode == 200;
@@ -44,16 +48,20 @@ DataSave = function() {
 };
 
 //http server
-var fileServer = new nodeStatic.Server('./public');
-var server = require('http').createServer(function(request, response) {
-	request.addListener('end', function () {
-		fileServer.serve(request, response);
-	}).resume();
+server.listen(process.env.PORT || config.HTTP_PORT, function() {
+	console.log('Listening on port %d', server.address().port);
 });
-server.listen(process.env.PORT || config.HTTP_PORT);
+/*app.get('/', function (req, res) {
+	res.sendFile(__dirname + '/public/index.html');
+});*/
+app.get('/user/:name', function (req, res) {
+	res.send(req.params.name);
+});
+app.get('/*', function (req, res) {
+	res.sendFile(__dirname + '/public/' + req.params[0]);
+});
 
 //socks server
-var io = require('socket.io')(server);
 io.on('connection', function(socket){
 	console.log('[socks] user connected');
 	socket.on('disconnect', function(){
