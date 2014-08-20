@@ -50,7 +50,7 @@ var server = require('http').createServer(function(request, response) {
 		fileServer.serve(request, response);
 	}).resume();
 });
-server.listen(config.HTTP_PORT);
+server.listen(process.env.PORT || config.HTTP_PORT);
 
 //socks server
 var io = require('socket.io')(server);
