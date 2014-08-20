@@ -1,0 +1,19 @@
+extend layout
+block content
+	#dangerAlert.alert.alert-danger
+	table#siteTable.table.table-striped.table-condensed
+		tr
+			th #
+			th Имя
+			th Ссылка
+			th Статус
+			th Дата
+block sidebar
+	.panel.panel-default
+		.panel-body
+			| Последнее обновление — 
+			span#lastUpdate никогда
+			| .
+	h3.heading Что это?
+	p.
+		А это, батенька, прошу заметить, монитор доступности сайтов.

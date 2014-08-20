@@ -1,7 +1,8 @@
 var fs = require("fs");
 var url = require("url");
 var path = require("path");
-var app = require('express')();
+var express = require('express');
+var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var request = require('request');
@@ -51,15 +52,12 @@ DataSave = function() {
 server.listen(process.env.PORT || config.HTTP_PORT, function() {
 	console.log('Listening on port %d', server.address().port);
 });
-/*app.get('/', function (req, res) {
-	res.sendFile(__dirname + '/public/index.html');
-});*/
-app.get('/user/:name', function (req, res) {
-	res.send(req.params.name);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.get('/', function (req, res) {
+	res.render('index', { title : 'Мониториг' });
 });
-app.get('/*', function (req, res) {
-	res.sendFile(__dirname + '/public/' + req.params[0]);
-});
+app.use(express.static(__dirname + '/public'));
 
 //socks server
 io.on('connection', function(socket){
