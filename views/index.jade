@@ -1,4 +1,6 @@
 extend layout
+block scripts
+	script(type='text/javascript', src='/client.js')
 block content
 	#dangerAlert.alert.alert-danger
 	table#siteTable.table.table-striped.table-condensed
@@ -14,6 +16,6 @@ block sidebar
 			| Последнее обновление — 
 			span#lastUpdate никогда
 			| .
-	h3.heading Что это?
+	h3.heading Куда я попал?
 	p.
-		А это, батенька, прошу заметить, монитор доступности сайтов.
+		Это монитор доступности сайтов. Более подробно можете увидеть на странице с <a href="/about">описанием</a>.

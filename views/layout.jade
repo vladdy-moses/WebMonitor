@@ -6,14 +6,16 @@ html
 		script(type='text/javascript', src='//code.jquery.com/jquery-2.1.1.min.js')
 		script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js')
 		script(type='text/javascript', src='/socket.io/socket.io.js')
-		script(type='text/javascript', src='/client.js')
+		block scripts
 		script(type='text/javascript').
 			#{siteItemTemplate}
 	body
 		nav.navbar.navbar-default
 			.container-fluid
 				.navbar-header
-					.navbar-brand WebSite.Monitor
+					a.navbar-brand(href='/') WebSite.Monitor
+				ul.nav.navbar-nav.navbar-right
+					li: a(href='/about') Об этом приложении
 		.container
 			.row
 				.col-md-3.col-sm-12.col-md-push-9
@@ -22,4 +24,4 @@ html
 					block content
 		footer
 			hr
-			p А тут когда-нибудь будет футер. Но пока его нет.
+			p &copy;&nbsp;<a href='https://github.com/vladdy-moses/'>vladdy-moses</a>.

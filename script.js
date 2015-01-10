@@ -11,6 +11,7 @@ var config = require('./config.json');
 var sites = require('./sites.json');
 var sitesData = fs.existsSync('./sites.data.json') ? require('./sites.data.json') : [];
 
+// запускает механизм проса сайтов
 Main = function () {
 	var i = 0;
 	sites.forEach(function(item) { 
@@ -23,6 +24,7 @@ Main = function () {
 	setInterval(DataSave, config.SAVE_INTERVAL);
 };
 
+// посылает запрос на сайт и обрабатывает
 CheckSite = function (item) {
 	io.emit('setSiteInProcess', item.Id);
 	
@@ -38,32 +40,48 @@ CheckSite = function (item) {
 	});
 };
 
+// запускает повторный опрос сайта через определённое время (надо будет выпилить)
 CheckProcess = function(item) {
 	sitesData[item.Id].lastStatusDate = new Date();
 	io.emit('setSite', { site: item, data: sitesData[item.Id] });
 	setTimeout(function() { CheckSite(item); }, config.POLL_INTERVAL);
 };
-
+ 
+// сохраняет данные по доступности сайтов (надо будет выпилить)
 DataSave = function() {
 	fs.writeFile("./sites.data.json", JSON.stringify(sitesData), "utf8");
 };
 
+// записывает сообщение в лог (пока только в консоль)
+LogWrite = function(tag, message, isImportant) {
+	isImportant = (typeof(isImportant) !== 'undefined') ? isImportant : false;
+	if(config.DEBUG || isImportant) {
+		var timeStamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+		var importantStamp = (isImportant) ? '[!!]' : '';
+		var resultMessage = timeStamp + ' ' + importantStamp + '[' + tag + ']: ' + message;
+		console.log(resultMessage);
+	}
+}
+
 //http server
 server.listen(process.env.PORT || config.HTTP_PORT, function() {
-	console.log('Listening on port %d', server.address().port);
+	LogWrite('http', 'Listening on port ' + server.address().port);
 });
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.get('/', function (req, res) {
-	res.render('index', { title : 'Мониториг' });
+	res.render('index', { title: 'Мониториг' });
+});
+app.get('/about', function (req, res) {
+	res.render('about', { title: 'Об этом приложении' });
 });
 app.use(express.static(__dirname + '/public'));
 
 //socks server
 io.on('connection', function(socket){
-	console.log('[socks] user connected');
+	LogWrite('socks', 'User connected');
 	socket.on('disconnect', function(){
-		console.log('[socks] user disconnected');
+		LogWrite('socks', 'User disconnected');
 	});
 	socket.on('getSites', function() {
 		socket.emit('setSites', { sites: sites, sitesData: sitesData });
